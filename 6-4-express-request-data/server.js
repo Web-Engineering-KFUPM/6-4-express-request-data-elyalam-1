@@ -32,9 +32,7 @@ LAB SETUP INSTRUCTIONS
  *   - create Express app instance
  *   - start server on port 3000
  *   - show console.log("API running at http://localhost:3000")
- *   HINT: 
- *     const app = express();
- *     app.listen(3000, ()=> console.log(...));
+print
  * 
  *============================================
  * TODO-2 (/echo route):
@@ -126,3 +124,78 @@ LAB SETUP INSTRUCTIONS
 // Start the server by listening
 
 
+app.listen(3000, () => {
+  console.log("API running at http://localhost:3000");
+});
+
+
+/**
+ *============================================
+ * TODO-2 (/echo route):
+ * ============================================
+ */
+// Query params: /echo?name=Ali&age=22
+app.get("/echo", (req, res) => {
+  const { name, age } = req.query;
+
+  if (!name || !age) {
+    return res.status(400).json({ ok: false, error: "name & age required" });
+  }
+
+  res.json({
+    ok: true,
+    name,
+    age,
+    msg: `Hello ${name}, you are ${age}`,
+  });
+});
+
+
+/**
+ * ============================================
+ * TODO-3 (/profile/:first/:last route):
+ * ============================================
+ */
+// Route params: /profile/First/Last
+app.get("/profile/:first/:last", (req, res) => {
+  const { first, last } = req.params;
+
+  res.json({
+    ok: true,
+    fullName: `${first} ${last}`,
+  });
+});
+
+
+/**
+ * ============================================
+ * TODO-4 (Param middleware):
+ * ============================================
+ */
+// Route param middleware example: /users/42
+app.param("userId", (req, res, next, userId) => {
+  const num = Number(userId);
+
+  if (!Number.isInteger(num) || num <= 0) {
+    return res
+      .status(400)
+      .json({ ok: false, error: "userId must be positive number" });
+  }
+
+  req.userIdNum = num;
+  next();
+});
+
+
+/**
+ * ============================================
+ * TODO-5 (/users/:userId route):
+ * ============================================
+ */
+// Route params: /users/:userId route
+app.get("/users/:userId", (req, res) => {
+  res.json({
+    ok: true,
+    userId: req.userIdNum,
+  });
+});
